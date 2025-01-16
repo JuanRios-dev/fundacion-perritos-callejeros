@@ -7,10 +7,10 @@ const menuItems = [
   { icon: Home, label: 'Inicio', href: '/home' },
   {
     icon: Layers,
-    label: 'Géstion de Mascotas',
+    label: 'Géstion de Adopciones',
     items: [
-      { label: 'Listado de animales', href: '/animals/list' },
-      { label: 'Agregar un animal', href: '/animals/create' },
+      { label: 'Listado de animales', href: '/animals' },
+      { label: 'Listado de adoptantes', href: '/adopters' },
     ],
   },
   {

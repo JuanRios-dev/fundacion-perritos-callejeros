@@ -7,7 +7,7 @@ interface Pagination {
   total: number;
 }
 
-const useCrud = (endpoint: string) => {
+const useCrud = (endpoint: string, tableName: string) => {
   const [data, setData] = useState<any[]>([]);
   const [pagination, setPagination] = useState<Pagination>({
     page: 1,
@@ -16,13 +16,8 @@ const useCrud = (endpoint: string) => {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [validationErrors, setValidationErrors] = useState<Record<string, string[]>>({});
-
-  // Helper function to reset errors
-  const resetErrors = () => {
-    setError(null);
-    setValidationErrors({});
-  };
 
   /**
    * Fetch all items from the API with optional filters.
@@ -30,8 +25,9 @@ const useCrud = (endpoint: string) => {
    * @param {Record<string, any>} filters - Additional query parameters for filtering.
    */
   const fetchAll = async (page: number = 1, filters: Record<string, any> = {}) => {
-    setLoading(false);
-    resetErrors();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
       const queryParams = new URLSearchParams({
@@ -50,11 +46,11 @@ const useCrud = (endpoint: string) => {
       });
       return true;
     } catch (err: any) {
-      setError('Server error 500');
+      setError(`Error al obtener los datos de ${tableName}. Por favor, inténtelo nuevamente.`);
       setData([]);
       return false;
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -64,21 +60,25 @@ const useCrud = (endpoint: string) => {
    * @returns {boolean} - Whether the creation was successful.
    */
   const create = async (newData: any): Promise<boolean> => {
-    resetErrors();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
       await apiClient.post(endpoint, newData);
-      await fetchAll(pagination.page); // Refresh the data
+      await fetchAll(pagination.page);
+      setSuccess(`${tableName} creado éxitosamente.`);
       return true;
     } catch (err: any) {
       if (err.response?.status === 422) {
         setValidationErrors(err.response.data.errors || {});
       } else {
+        setError(`Error al crear un registro en ${tableName}. Por favor, inténtelo nuevamente.`);
         console.log(err);
       }
       return false;
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -89,21 +89,25 @@ const useCrud = (endpoint: string) => {
    * @returns {boolean} - Whether the update was successful.
    */
   const update = async (id: number, updatedData: any): Promise<boolean> => {
-    resetErrors();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
       await apiClient.put(`${endpoint}/${id}`, updatedData);
-      await fetchAll(pagination.page); // Refresh the data
+      await fetchAll(pagination.page);
+      setSuccess(`${tableName} actualizado éxitosamente.`);
       return true;
     } catch (err: any) {
       if (err.response?.status === 422) {
         setValidationErrors(err.response.data.errors || {});
       } else {
-        setError(err.response?.data?.message || 'Error updating data');
+        setError(`Error al actualizar un registro en ${tableName}. Por favor, inténtelo nuevamente.`);
+        console.log(err);
       }
       return false;
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -113,17 +117,21 @@ const useCrud = (endpoint: string) => {
    * @returns {boolean} - Whether the deletion was successful.
    */
   const remove = async (id: number): Promise<boolean> => {
-    resetErrors();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
 
     try {
       await apiClient.delete(`${endpoint}/${id}`);
-      await fetchAll(pagination.page); // Refresh the data
+      await fetchAll(pagination.page);
+      setSuccess(`${tableName} eliminado éxitosamente.`);
       return true;
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Error deleting data');
+      setError(`Error al eliminar un registro en ${tableName}. Por favor, inténtelo nuevamente.`);
+      console.log(err);
       return false;
     } finally {
-      setLoading(true);
+      setLoading(false);
     }
   };
 
@@ -132,6 +140,7 @@ const useCrud = (endpoint: string) => {
     pagination,
     loading,
     error,
+    success,
     validationErrors,
     fetchAll,
     create,

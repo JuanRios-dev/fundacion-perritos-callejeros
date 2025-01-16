@@ -2,7 +2,7 @@ import React from 'react';
 import * as Icons from 'lucide-react'; // Importa todos los iconos como un objeto
 
 interface TableProps {
-  columns: { title: string; dataIndex: string }[];
+  columns: { title: string; dataIndex: string; isImage?: boolean; maxLength?: number }[]; // Opcional: maxLength y isImage
   data: any[];
   actions?: { icon: string; onClick: (row: any) => void }[];
 }
@@ -22,7 +22,7 @@ const Table: React.FC<TableProps> = ({ columns, data, actions }) => {
               </th>
             ))}
             {actions && (
-              <th className="px-4 py-2 font-medium text-gray-800 uppercase tracking-wide">
+              <th className="px-4 py-2 font-medium text-gray-800 uppercase tracking-wide sticky right-0 bg-white z-10">
                 Acciones
               </th>
             )}
@@ -35,12 +35,29 @@ const Table: React.FC<TableProps> = ({ columns, data, actions }) => {
               className="hover:bg-gray-50 transition-colors border-b last:border-0"
             >
               {columns.map((col) => (
-                <td key={col.dataIndex} className="px-4 py-2 text-gray-700">
-                  {row[col.dataIndex]}
+                <td
+                  key={col.dataIndex}
+                  className="px-4 py-2 text-gray-700"
+                  style={{
+                    maxWidth: col.maxLength ? `${col.maxLength}ch` : 'auto',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  {col.isImage && row[col.dataIndex] ? (
+                    <img
+                      src={row[col.dataIndex]}
+                      alt="Imagen"
+                      className="w-12 h-12 object-cover rounded-md"
+                    />
+                  ) : (
+                    row[col.dataIndex]
+                  )}
                 </td>
               ))}
               {actions && (
-                <td className="px-4 py-2 text-gray-700">
+                <td className="px-4 py-2 text-gray-700 sticky right-0 bg-white z-10">
                   <div className="flex space-x-2">
                     {actions.map((action, i) => {
                       const ActionIcon = Icons[action.icon];

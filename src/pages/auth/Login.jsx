@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { login, getToken } from '@/services/authService';
+import { toast } from 'sonner';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
 
   const handleLogin = async () => {
     try {
       await login(email, password);
-      setMessage('Inicio de sesión exitoso');
-      console.log('Token guardado:', getToken());
+      toast.success('Inicio de sesión exitoso');
     } catch (error) {
-      setMessage('Error en el inicio de sesión');
+      toast.error('Error en el inicio de sesión');
     }
   };
 
@@ -56,7 +55,6 @@ function Login() {
             </button>
           </div>
         </div>
-        {message && <p className="mt-4 text-center text-sm text-gray-600">{message}</p>}
       </div>
     </div>
   );

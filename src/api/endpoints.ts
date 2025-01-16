@@ -1,6 +1,8 @@
+const URL = 'http://127.0.0.1:8000/api'
+
 export const ENDPOINTS = {
     BASE_URL: {
-        URL: 'http://127.0.0.1:8000',
+        URL: 'http://127.0.0.1:8000/api',
     },
     AUTH: {
         LOGIN: `${URL}/auth/login`,
@@ -14,8 +16,11 @@ export const ENDPOINTS = {
         UPDATE: (id: string) => `${URL}/users/${id}`,
         DELETE: (id: string) => `${URL}/users/${id}`,
     },
-    //   PRODUCTS: {
-    //     LIST: `${BASE_URL}/products`,
-    //     DETAILS: (id: string) => `${BASE_URL}/products/${id}`,
-    //   },
+    ANIMALS: {
+        LIST: `${URL}/animals`,
+        DETAILS: (id: string) => `${URL}/animals/${id}`,
+        CREATE: `${URL}/animals`,
+        UPDATE: (id: string) => `${URL}/animals/${id}`,
+        DELETE: (id: string) => `${URL}/animals/${id}`,
+    },
 };

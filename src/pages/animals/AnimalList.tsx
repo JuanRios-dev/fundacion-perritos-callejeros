@@ -5,10 +5,10 @@ import Table from '@/components/global/Table';
 import Pagination from '@/components/global/Pagination';
 import RootLayout from '@/layouts/DashboardLayout';
 import useModal from '@/hooks/useModal';
-import UserForm from './UserForm';
+import AnimalForm from './AnimalForm';
 import useConfirmation from '@/hooks/useConfirmation';
 
-const UserList: React.FC = () => {
+const AnimalList: React.FC = () => {
   const {
     data,
     pagination,
@@ -20,10 +20,13 @@ const UserList: React.FC = () => {
     create,
     update,
     remove,
-  } = useCrud('/users', 'Usuario');
+  } = useCrud('/animals', 'Animal');
 
   const { isOpen, openModal, closeModal } = useModal();
-  const { confirm, Modal: ConfirmationModal } = useConfirmation();
+  const {
+    confirm,
+    Modal: ConfirmationModal,
+  } = useConfirmation();
 
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -46,23 +49,35 @@ const UserList: React.FC = () => {
 
   const columns = [
     { title: 'ID', dataIndex: 'id' },
+    { title: 'Imagen', dataIndex: 'image', isImage: true },
     { title: 'Nombre', dataIndex: 'name' },
-    { title: 'Email', dataIndex: 'email' },
+    { title: 'Especie', dataIndex: 'species' },
+    { title: 'Raza', dataIndex: 'breed' },
+    { title: 'Edad (meses)', dataIndex: 'age' },
+    { title: 'Género', dataIndex: 'gender' },
+    { title: 'Tamaño', dataIndex: 'size' },
+    { title: 'Descripción', dataIndex: 'description', maxLength: 50 },
+    { title: 'Estado', dataIndex: 'status' },
+    { title: 'Estado de Salud', dataIndex: 'health_status' },
+    { title: 'Fecha de Ingreso', dataIndex: 'arrival_date' },
+    { title: 'Fecha de Adopción', dataIndex: 'adoption_date' },
+    { title: 'Ubicación', dataIndex: 'location' },
   ];
+
 
   const actions = [
     {
       icon: 'Edit',
       onClick: (row) => {
         setEditingUser(row);
-        openModal();
+        openModal(); // Abrir modal en modo edición
       },
     },
     {
       icon: 'Delete',
       onClick: (row) => {
         confirm(
-          `¿Estás seguro de que deseas eliminar al usuario ${row.name}?`,
+          `¿Estás seguro de que deseas eliminar al Animal ${row.name}?`,
           async () => {
             await remove(row.id);
           }
@@ -75,7 +90,7 @@ const UserList: React.FC = () => {
     fetchAll(page, { search: searchQuery });
   };
 
-  const handleFormSubmit = async (values: { name: string; email: string }) => {
+  const handleFormSubmit = async (values: { name: string; email: string; phone: string; address: string; status: string }) => {
     let success = false;
 
     if (editingUser) {
@@ -99,7 +114,7 @@ const UserList: React.FC = () => {
     <RootLayout>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-semibold">Listado de Usuarios</h1>
+          <h1 className="text-2xl font-semibold">Listado de Animales</h1>
           {loading && (
             <div className="w-6 h-6 border-4 border-gray-300 border-t-blue-400 rounded-full animate-spin"></div>
           )}
@@ -107,7 +122,7 @@ const UserList: React.FC = () => {
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Buscar Usuario..."
+            placeholder="Buscar Animal..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-md"
@@ -119,7 +134,7 @@ const UserList: React.FC = () => {
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            Agregar Usuario
+            Agregar Animal
           </button>
         </div>
       </div>
@@ -143,11 +158,11 @@ const UserList: React.FC = () => {
               ✖
             </button>
             <h2 className="text-xl font-semibold mb-4">
-              {editingUser ? 'Editar Usuario' : 'Agregar Usuario'}
+              {editingUser ? 'Editar Animal' : 'Agregar Animal'}
             </h2>
-            <UserForm
+            <AnimalForm
               isEditing={!!editingUser}
-              initialValues={editingUser || { name: '', email: '' }}
+              initialValues={editingUser || { name: '', email: '', phone: '', address: '', status: 'pendiente' }}
               validationErrors={validationErrors}
               onSubmit={handleFormSubmit}
               onCancel={handleFormCancel}
@@ -161,4 +176,4 @@ const UserList: React.FC = () => {
   );
 };
 
-export default UserList;
+export default AnimalList;

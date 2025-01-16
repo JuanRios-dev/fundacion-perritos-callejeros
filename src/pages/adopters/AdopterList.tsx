@@ -5,10 +5,10 @@ import Table from '@/components/global/Table';
 import Pagination from '@/components/global/Pagination';
 import RootLayout from '@/layouts/DashboardLayout';
 import useModal from '@/hooks/useModal';
-import UserForm from './UserForm';
+import AdopterForm from './AdopterForm';
 import useConfirmation from '@/hooks/useConfirmation';
 
-const UserList: React.FC = () => {
+const AnimalList: React.FC = () => {
   const {
     data,
     pagination,
@@ -20,10 +20,13 @@ const UserList: React.FC = () => {
     create,
     update,
     remove,
-  } = useCrud('/users', 'Usuario');
+  } = useCrud('/adopters', 'Adoptantes');
 
   const { isOpen, openModal, closeModal } = useModal();
-  const { confirm, Modal: ConfirmationModal } = useConfirmation();
+  const {
+    confirm,
+    Modal: ConfirmationModal,
+  } = useConfirmation();
 
   const [editingUser, setEditingUser] = useState<any>(null);
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -47,7 +50,10 @@ const UserList: React.FC = () => {
   const columns = [
     { title: 'ID', dataIndex: 'id' },
     { title: 'Nombre', dataIndex: 'name' },
-    { title: 'Email', dataIndex: 'email' },
+    { title: 'Correo', dataIndex: 'email' },
+    { title: 'Teléfono', dataIndex: 'phone' },
+    { title: 'Dirección', dataIndex: 'address' },
+    { title: 'Estado', dataIndex: 'status' },
   ];
 
   const actions = [
@@ -62,7 +68,7 @@ const UserList: React.FC = () => {
       icon: 'Delete',
       onClick: (row) => {
         confirm(
-          `¿Estás seguro de que deseas eliminar al usuario ${row.name}?`,
+          `¿Estás seguro de que deseas eliminar al Adoptante ${row.name}?`,
           async () => {
             await remove(row.id);
           }
@@ -75,7 +81,7 @@ const UserList: React.FC = () => {
     fetchAll(page, { search: searchQuery });
   };
 
-  const handleFormSubmit = async (values: { name: string; email: string }) => {
+  const handleFormSubmit = async (values: { name: string; email: string; phone: string; address: string; status: string }) => {
     let success = false;
 
     if (editingUser) {
@@ -99,7 +105,7 @@ const UserList: React.FC = () => {
     <RootLayout>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-semibold">Listado de Usuarios</h1>
+          <h1 className="text-2xl font-semibold">Listado de Adoptantes</h1>
           {loading && (
             <div className="w-6 h-6 border-4 border-gray-300 border-t-blue-400 rounded-full animate-spin"></div>
           )}
@@ -107,7 +113,7 @@ const UserList: React.FC = () => {
         <div className="flex items-center gap-4">
           <input
             type="text"
-            placeholder="Buscar Usuario..."
+            placeholder="Buscar Adoptante..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-md"
@@ -119,7 +125,7 @@ const UserList: React.FC = () => {
             }}
             className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
           >
-            Agregar Usuario
+            Agregar Adoptante
           </button>
         </div>
       </div>
@@ -143,11 +149,11 @@ const UserList: React.FC = () => {
               ✖
             </button>
             <h2 className="text-xl font-semibold mb-4">
-              {editingUser ? 'Editar Usuario' : 'Agregar Usuario'}
+              {editingUser ? 'Editar Adoptante' : 'Agregar Adoptante'}
             </h2>
-            <UserForm
+            <AdopterForm
               isEditing={!!editingUser}
-              initialValues={editingUser || { name: '', email: '' }}
+              initialValues={editingUser || { name: '', email: '', phone: '', address: '', status: 'pendiente' }}
               validationErrors={validationErrors}
               onSubmit={handleFormSubmit}
               onCancel={handleFormCancel}
@@ -161,4 +167,4 @@ const UserList: React.FC = () => {
   );
 };
 
-export default UserList;
+export default AnimalList;
